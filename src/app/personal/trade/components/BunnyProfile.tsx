@@ -1,5 +1,6 @@
 "use client";
 import styled from "styled-components";
+import Image from "next/image";
 import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -89,23 +90,23 @@ export default function Profile({ bunny }: ProfileProps) {
 
           
           <Avatar>
-            <img src={bunny.image || "/images/login/personalProfile.png"} alt="Profile" />
+            <Image src={bunny.image || "/images/login/personalProfile.png"} alt="Profile" width={60} height={60} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </Avatar>
           <ProfileInfo>
             <BunnyName>{bunny.bunny_name}</BunnyName>
             <KoreanName>{bunny.user_name}</KoreanName>
             <SocialLinks>
               <SocialLink>
-                <img src={getLinkIcon("github")} alt="GitHub" />
+                <Image src={getLinkIcon("github")} alt="GitHub" width={20} height={20} />
               </SocialLink>
               <SocialLink>
-                <img src={getLinkIcon("youtube")} alt="YouTube" />
+                <Image src={getLinkIcon("youtube")} alt="YouTube" width={20} height={20} />
               </SocialLink>
               <SocialLink>
-                <img src={getLinkIcon("instagram")} alt="Instagram" />
+                <Image src={getLinkIcon("instagram")} alt="Instagram" width={20} height={20} />
               </SocialLink>
               <SocialLink>
-                <img src={getLinkIcon("velog")} alt="Velog" />
+                <Image src={getLinkIcon("velog")} alt="Velog" width={20} height={20} />
               </SocialLink>
             </SocialLinks>
           </ProfileInfo>

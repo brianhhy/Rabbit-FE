@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import Image from 'next/image';
 import { useBunnyStore, Bunny } from '../_store/bunnyStore';
 import { useRouter } from 'next/navigation';
 
@@ -107,7 +108,7 @@ export default function Corporation() {
         <InnerContainer>
           <Nav>
             <Logo onClick={() => router.push('/')}>
-              <img src="/images/logo_pastel.png" alt="Rabbit Logo" />
+              <Image src="/images/logo_pastel.png" alt="Rabbit Logo" width={100} height={34} />
             </Logo>
           <NavMenu>
             <NavItem 
@@ -186,16 +187,16 @@ export default function Corporation() {
                       alt="타겟 이미지"
                     />
                     <StarImage $size="large" $position="top-left">
-                      <img src="/images/corporation/rbt_star.png" alt="별" />
+                      <Image src="/images/corporation/rbt_star.png" alt="별" width={40} height={40} />
                     </StarImage>
                     <StarImage $size="medium" $position="top-right">
-                      <img src="/images/corporation/rbt_star.png" alt="별" />
+                      <Image src="/images/corporation/rbt_star.png" alt="별" width={40} height={40} />
                     </StarImage>
                     <StarImage $size="small" $position="bottom-left">
-                      <img src="/images/corporation/rbt_star.png" alt="별" />
+                      <Image src="/images/corporation/rbt_star.png" alt="별" width={40} height={40} />
                     </StarImage>
                     <StarImage $size="small" $position="bottom-right">
-                      <img src="/images/corporation/rbt_star.png" alt="별" />
+                      <Image src="/images/corporation/rbt_star.png" alt="별" width={40} height={40} />
                     </StarImage>
                   </MatchingAnimationContainer>
                 </MatchingHeroVisual>

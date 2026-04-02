@@ -6,6 +6,19 @@ import {
     BunnyStats,
 } from "@/app/_api/userAPI";
 import { BunnyInfo, BunnyHolder, ChartData } from "@/app/_api/bunnyAPI";
+import { User } from "@/app/_store/userStore";
+
+// ─────────────────────────────────────────────
+// User — userStore 초기값 (fetchUser 대체)
+// ─────────────────────────────────────────────
+export const DUMMY_USER: User = {
+    user_id: "1",
+    name: "박지호",
+    image: "/images/login/personalProfile.png",
+    role: "ROLE_BUNNY",
+    carrot: "100000000",
+    my_bunny_name: "JihoBunny",
+};
 
 // ─────────────────────────────────────────────
 // MyInfo — 내 정보 (getInfo 대체)

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import StyledComponentsRegistry from "./registry";
+import MobileGuard from "./_shared/components/MobileGuard";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -71,7 +72,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${NanumSquare.variable} ${Rockstar.variable}`}>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+            <MobileGuard>{children}</MobileGuard>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

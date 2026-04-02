@@ -1,5 +1,6 @@
 "use client";
 import styled from "styled-components";
+import Image from "next/image";
 import { Bunny } from "../../../_store/bunnyStore";
 import { bunnyTypeValidate, positionValidate, developerTypeValidate, getPositionIcon, getDeveloperTypeIcon, getBunnyTypeIcon } from "../utils/bunnyInfoMapper";
 
@@ -12,21 +13,21 @@ export default function BunnyType({ bunny }: BunnyTypeProps) {
     <CategorySection>
       <CategoryItem>
         <CategoryIcon>
-          <img src={getPositionIcon(bunny.position)} alt="Position" />
+          <Image src={getPositionIcon(bunny.position)} alt="Position" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </CategoryIcon>
         <CategoryLabel>직군</CategoryLabel>
         <CategoryValue>{positionValidate(bunny.position)}</CategoryValue>
       </CategoryItem>
       <CategoryItem>
         <CategoryIcon>
-          <img src={getBunnyTypeIcon(bunny)} alt="Bunny Type" />
+          <Image src={getBunnyTypeIcon(bunny)} alt="Bunny Type" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </CategoryIcon>
         <CategoryLabel>버니 유형</CategoryLabel>
         <CategoryValue>{bunnyTypeValidate(bunny)}</CategoryValue>
       </CategoryItem>
       <CategoryItem>
         <CategoryIcon>
-          <img src={getDeveloperTypeIcon(bunny.developer_type)} alt="Developer Type" />
+          <Image src={getDeveloperTypeIcon(bunny.developer_type)} alt="Developer Type" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </CategoryIcon>
         <CategoryLabel>개발자 유형</CategoryLabel>
         <CategoryValue>{developerTypeValidate(bunny.developer_type)}</CategoryValue>

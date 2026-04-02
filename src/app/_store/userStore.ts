@@ -1,6 +1,7 @@
 // userStore.ts
 import { create } from "zustand";
 import axios from "axios";
+import { DUMMY_USER } from "@/app/_dummy/info";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const TEST_TOKEN = process.env.NEXT_PUBLIC_TEST_TOKEN;
@@ -29,8 +30,8 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
-    user: null,
-    isLoading: true,
+    user: DUMMY_USER, // 더미 데이터 사용 (API 대체)
+    isLoading: false,
     error: null,
 
     fetchUser: async () => {

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Image from "next/image";
 import { BadgeType } from "../_types/interfaces";
 
 interface CorporationBadgeProps {
@@ -9,7 +10,7 @@ interface CorporationBadgeProps {
 function CorporationBadge({ badge, amount }: CorporationBadgeProps) {
     return (
         <Corporation>
-            <img src={badge.src} alt={badge.alias} />
+            <Image src={badge.src} alt={badge.alias} width={40} height={40} style={{ width: "40px", height: "auto" }} />
             <div>
                 <TotalAmount>{amount}</TotalAmount>
                 <span>버니</span>

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Image from "next/image";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {
@@ -255,7 +256,7 @@ function MyInfo({ onShowModal }: MyInfoProps) {
                 </Main>
                 <Bottom>
                     <Guide>
-                        <img src={"/images/personal/mypage/fly_rabbit.png"} />
+                        <Image src="/images/personal/mypage/fly_rabbit.png" alt="fly rabbit" width={40} height={40} style={{ width: "auto", height: "96%" }} />
                         <div>저장하기를 꼬옥 눌러주세요!</div>
                     </Guide>
                     <SaveBtn
