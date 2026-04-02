@@ -11,30 +11,30 @@ const WithAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
         const { user, isLoading, error, fetchUser } = useUserStore();
         const router = useRouter();
 
-        useEffect(() => {
-            if (!user && !error) {
-                fetchUser();
-            }
-        }, [user, error, fetchUser]);
+        // useEffect(() => {
+        //     if (!user && !error) {
+        //         fetchUser();
+        //     }
+        // }, [user, error, fetchUser]);
 
-        useEffect(() => {
-            if (!isLoading && (error || !user)) {
-                router.replace('/');
-            }
-        }, [isLoading, error, user, router]);
+        // useEffect(() => {
+        //     if (!isLoading && (error || !user)) {
+        //         router.replace('/');
+        //     }
+        // }, [isLoading, error, user, router]);
 
-        if (isLoading || !user) {
-            return (
-                <LoadingWrapper>
-                    <Loading 
-                        variant="bunny" 
-                        size="large" 
-                        text="사용자 정보를 불러오는 중..." 
-                        fullScreen={true}
-                    />
-                </LoadingWrapper>
-            );
-        }
+        // if (isLoading || !user) {
+        //     return (
+        //         <LoadingWrapper>
+        //             <Loading
+        //                 variant="bunny"
+        //                 size="large"
+        //                 text="사용자 정보를 불러오는 중..."
+        //                 fullScreen={true}
+        //             />
+        //         </LoadingWrapper>
+        //     );
+        // }
 
         return <WrappedComponent {...props} />;
     };

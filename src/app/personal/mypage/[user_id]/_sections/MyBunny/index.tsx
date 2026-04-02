@@ -9,11 +9,18 @@ import AiSummarize from "@/app/personal/mypage/[user_id]/_sections/MyBunny/AiFee
 import CustomerHold from "./CustomerHold";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import { BunnyHolder, BunnyInfo, getBunnyMe } from "@/app/_api/bunnyAPI";
+import { BunnyHolder, BunnyInfo } from "@/app/_api/bunnyAPI";
+// import { getBunnyMe } from "@/app/_api/bunnyAPI";
 import { useUserStore } from "@/app/_store/userStore";
 import { motion } from "framer-motion";
 import { Bunny, useBunnyStore } from "@/app/_store/bunnyStore";
 import { useRouter } from "next/navigation";
+import {
+    DUMMY_MY_BUNNY_NAME,
+    DUMMY_MY_BUNNY_INFO,
+    DUMMY_MY_BUNNY_HOLDERS,
+    DUMMY_MY_BUNNY_RADIAL,
+} from "@/app/_dummy/mybunny";
 
 const radialObject: Bunny = {
     bunny_id: "",
@@ -45,50 +52,45 @@ function MyBunny() {
     const { user } = useUserStore();
     const router = useRouter();
 
-    const bunnyRole = user?.role ?? "ROLE_USER";
-    const bunnyName = user?.my_bunny_name ?? "";
-    const devType = useBunnyStore((state) =>
-        state.getBunnyByName(bunnyName)
-    )?.developer_type;
-
+    const bunnyRole = user?.role ?? "ROLE_BUNNY"; // 더미: 항상 버니 대시보드 표시
+    const bunnyName = DUMMY_MY_BUNNY_NAME;
     const radialData = useBunnyStore((state) =>
         state.getBunnyByName(bunnyName)
-    );
+    ) ?? DUMMY_MY_BUNNY_RADIAL; // store에 없으면 더미 fallback
+    const devType = radialData.developer_type;
 
     useEffect(() => {
-        const fetchBunnyInfo = async () => {
-            try {
-                const data = await getBunnyMe();
-                console.log(data, "홀더스");
+        // 더미 데이터 사용 (API 대체)
+        setBunnyInfo(DUMMY_MY_BUNNY_INFO);
+        setBunnyHolder(DUMMY_MY_BUNNY_HOLDERS);
 
-                const customInfoData: BunnyInfo = {
-                    bunny_type: data.bunny_type,
-                    badges: data.badges,
-                    reliability: data.reliability,
-                    market_cap: data.market_cap,
-                    current_price: data.current_price,
-                    ai_feedback: data.ai_feedback,
-                    like_count: data.like_count,
-                };
-
-                const customHolderData: BunnyHolder[] = data.holder_types.map(
-                    (hold: BunnyHolder) => ({
-                        developerType: hold.developerType,
-                        percentage: hold.percentage,
-                        count: hold.count,
-                    })
-                );
-                console.log("커스텀홀더", customHolderData);
-                console.log("커스텀인포", customInfoData);
-
-                setBunnyInfo(customInfoData);
-                setBunnyHolder(customHolderData);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchBunnyInfo();
+        // // API 호출 (주석처리)
+        // const fetchBunnyInfo = async () => {
+        //     try {
+        //         const data = await getBunnyMe();
+        //         const customInfoData: BunnyInfo = {
+        //             bunny_type: data.bunny_type,
+        //             badges: data.badges,
+        //             reliability: data.reliability,
+        //             market_cap: data.market_cap,
+        //             current_price: data.current_price,
+        //             ai_feedback: data.ai_feedback,
+        //             like_count: data.like_count,
+        //         };
+        //         const customHolderData: BunnyHolder[] = data.holder_types.map(
+        //             (hold: BunnyHolder) => ({
+        //                 developerType: hold.developerType,
+        //                 percentage: hold.percentage,
+        //                 count: hold.count,
+        //             })
+        //         );
+        //         setBunnyInfo(customInfoData);
+        //         setBunnyHolder(customHolderData);
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+        // fetchBunnyInfo();
     }, []);
 
     return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import FundBunnyCard from "./FundBunnyCard";
@@ -10,63 +10,46 @@ export default function EndingSoon() {
     const router = useRouter();
     const { fundBunnies } = useFundingStore();
 
-    console.log(fundBunnies, "fund");
+    type EndingBunny = {
+        fund_bunny_id: string;
+        bunny_name: string;
+        bunny_type: string;
+        end_at: string;
+        collected_bny: number;
+        target_bny: number;
+        avatarSrc: string;
+    };
 
-    const endingSoonBunnies = useMemo(() => {
+    const [endingSoonBunnies, setEndingSoonBunnies] = useState<EndingBunny[]>([]);
+
+    useEffect(() => {
         const bunniesArray = Array.isArray(fundBunnies) ? fundBunnies : [];
         const now = new Date();
 
-        console.log("=== 마감시간 디버깅 ===");
-        console.log("현재 시간:", now.toISOString());
-
-        const bunniesWithTimeLeft = bunniesArray
+        const result = bunniesArray
             .filter((bunny) => bunny.end_at && bunny.end_at.trim() !== "")
             .map((bunny) => {
                 try {
-                    const endTime = new Date(bunny.end_at);
-                    const timeLeft = endTime.getTime() - now.getTime();
-                    const hoursLeft = timeLeft / (1000 * 60 * 60);
-
-                    console.log(
-                        `${bunny.bunny_name}: ${hoursLeft.toFixed(
-                            1
-                        )}시간 남음 (${bunny.end_at})`
-                    );
-
-                    return {
-                        ...bunny,
-                        timeLeftMs: timeLeft,
-                        timeLeftFormatted: bunny.end_at,
-                        hoursLeft: hoursLeft,
-                    };
-                } catch (error) {
-                    console.log(`${bunny.bunny_name}: 날짜 파싱 실패`);
+                    const timeLeft = new Date(bunny.end_at).getTime() - now.getTime();
+                    return { ...bunny, timeLeftMs: timeLeft };
+                } catch {
                     return null;
                 }
             })
-            .filter((bunny) => bunny !== null) // 파싱 실패한 것 제거
-            .filter((bunny) => bunny.timeLeftMs > 0) // 아직 마감되지 않은 것만
-            .sort((a, b) => a.timeLeftMs - b.timeLeftMs) // 마감 시간이 가까운 순
-            .slice(0, 3) // 상위 3개
-            .map((bunny) => {
-                console.log(
-                    `선택된 버니: ${
-                        bunny.bunny_name
-                    } - ${bunny.hoursLeft.toFixed(1)}시간 남음`
-                );
-                return {
-                    fund_bunny_id: bunny.fund_bunny_id,
-                    bunny_name: bunny.bunny_name,
-                    bunny_type: bunny.bunny_type,
-                    end_at: bunny.timeLeftFormatted,
-                    collected_bny: bunny.collected_bny,
-                    target_bny: bunny.target_bny,
-                    avatarSrc: bunny.image || "/images/personal/funding/astronaut.png",
-                };
-            });
+            .filter((b): b is NonNullable<typeof b> => b !== null && b.timeLeftMs > 0)
+            .sort((a, b) => a.timeLeftMs - b.timeLeftMs)
+            .slice(0, 3)
+            .map((bunny) => ({
+                fund_bunny_id: bunny.fund_bunny_id,
+                bunny_name: bunny.bunny_name,
+                bunny_type: bunny.bunny_type,
+                end_at: bunny.end_at,
+                collected_bny: bunny.collected_bny,
+                target_bny: bunny.target_bny,
+                avatarSrc: bunny.image || "/images/personal/funding/astronaut.png",
+            }));
 
-        console.log("=== 디버깅 완료 ===");
-        return bunniesWithTimeLeft;
+        setEndingSoonBunnies(result);
     }, [fundBunnies]);
 
     return (

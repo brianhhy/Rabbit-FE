@@ -11,6 +11,7 @@ import Alarm from "./_components/Alarm";
 import WithAuth from "@/app/_components/WithAuth";
 import SpaceBackground from "../../_shared/components/SpaceBackground";
 
+import { useState } from "react";
 import { updateData } from "./_mocks/mocks";
 import { SelectData, notificationData } from "./_constants/constants";
 import { ListContainer, BunnyListContainer } from "./_components/ListContainer";
@@ -20,6 +21,8 @@ import HeaderForCorporation from "@/app/_shared/components/HeaderForCorporation"
 import Footer from "@/app/_shared/components/Footer";
 
 function Personal() {
+    const [rankType, setRankType] = useState<"buy" | "sell">("buy");
+
     return (
         <SpaceBackground>
             <Wrapper>
@@ -120,28 +123,30 @@ function Personal() {
                         </Container>
 
                         <Container>
-                            {/* 일 매수 체결강도 순위 */}
-                            <Title
-                                content={"일 매수 체결강도 순위"}
-                                isNoti={true}
-                                notification={notificationData[1].noti}
-                                time={false}
-                            />
+                            <RankTitleRow>
+                                <Title
+                                    content={"일일 체결강도 순위"}
+                                    isNoti={true}
+                                    notification={notificationData[1].noti}
+                                    time={false}
+                                />
+                                <RankTabGroup>
+                                    <RankTab
+                                        $active={rankType === "buy"}
+                                        onClick={() => setRankType("buy")}
+                                    >
+                                        매수
+                                    </RankTab>
+                                    <RankTab
+                                        $active={rankType === "sell"}
+                                        onClick={() => setRankType("sell")}
+                                    >
+                                        매도
+                                    </RankTab>
+                                </RankTabGroup>
+                            </RankTitleRow>
                             <RankContainer>
-                                <RankList type="buy" />
-                            </RankContainer>
-                        </Container>
-
-                        <Container>
-                            {/* 일 매도 체결강도 순위 */}
-                            <Title
-                                content={"일 매도 체결강도 순위"}
-                                isNoti={true}
-                                notification={notificationData[1].noti}
-                                time={false}
-                            />
-                            <RankContainer>
-                                <RankList type="sell" />
+                                <RankList type={rankType} />
                             </RankContainer>
                         </Container>
                         {/*                         
@@ -193,8 +198,8 @@ const Main = styled.div`
 const LeftSection = styled.div`
     width: 100%;
     min-width: 0;
-    display: grid;
-    grid-template-rows: 0.45fr 2fr;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
 `;
 
@@ -212,7 +217,8 @@ const RightSection = styled.div`
     height: 100%;
     display: grid;
     grid-template-rows: auto;
-    gap: 2.5rem;
+    gap: 0;
+    align-content: start;
 `;
 
 const Container = styled.div`
@@ -234,10 +240,48 @@ const CorporationCotainer = styled.div`
 
 const RankContainer = styled.div`
     width: 100%;
-    height: 80%;
+    height: auto;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+`;
+
+const RankTitleRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+
+    & > *:first-child {
+        flex: 1;
+        min-width: 0;
+    }
+`;
+
+const RankTabGroup = styled.div`
+    display: flex;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    margin-bottom: 1.2rem;
+`;
+
+const RankTab = styled.button<{ $active: boolean }>`
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    background: ${({ $active }) =>
+        $active ? "#ffffff" : "rgba(255,255,255,0.18)"};
+    color: ${({ $active }) => ($active ? "#4a2d80" : "#fff")};
+
+    &:hover {
+        background: ${({ $active }) =>
+            $active ? "#ffffff" : "rgba(255,255,255,0.3)"};
+    }
 `;
 
 const GraphContainer = styled.div`

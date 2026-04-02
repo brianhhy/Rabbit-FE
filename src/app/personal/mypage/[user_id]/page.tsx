@@ -159,7 +159,7 @@ const ButtonContainer = styled.div`
     position: absolute;
     top: 82%;
     left: 38%;
-    display: flex;
+    display: none;
     gap: 13px;
     justify-content: center;
 `;

@@ -22,11 +22,11 @@ function Header() {
     const isLoading = useUserStore((state) => state.isLoading);
     const fetchUser = useUserStore((state) => state.fetchUser);
 
-    useEffect(() => {
-        if (!user && !isLoading) {
-            fetchUser();
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (!user && !isLoading) {
+    //         fetchUser();
+    //     }
+    // }, []);
 
     useEffect(() => {
         setMounted(true);
@@ -82,7 +82,7 @@ function Header() {
                         홈
                     </Home>
                 </Link>
-                <Link href={user_id ? `/personal/mypage/${user_id}` : "#"}>
+                <Link href="/personal/mypage/1">
                     <MyPage
                         $activate={activate === "mypage"}
                         $isLoaded={isLoaded}

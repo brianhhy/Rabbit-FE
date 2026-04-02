@@ -14,7 +14,7 @@ export function getYesterdayMidnight(): Date {
 }
 
 export function ListContainer() {
-    const { allBunnies, fetchAllBunnies, startPriceRealtime, stopPriceRealtime } = useBunnyStore();
+    const { allBunnies, fetchAllBunnies } = useBunnyStore();
 
     useEffect(() => {
         if (!allBunnies || allBunnies.length === 0) {
@@ -30,37 +30,31 @@ export function ListContainer() {
         );
     }, [allBunnies]);
 
-    // 실시간 가격 구독 시작
-    useEffect(() => {
-        if (filteredList.length > 0) {
-            filteredList.forEach((bunny) => {
-                startPriceRealtime(bunny.bunny_name);
-            });
-        }
-
-        // 컴포넌트 언마운트 시 구독 해제
-        return () => {
-            if (filteredList.length > 0) {
-                filteredList.forEach((bunny) => {
-                    stopPriceRealtime(bunny.bunny_name);
-                });
-            }
-        };
-    }, [filteredList, startPriceRealtime, stopPriceRealtime]);
+    // // 실시간 가격 구독 (WebSocket — 주석처리)
+    // useEffect(() => {
+    //     if (filteredList.length > 0) {
+    //         filteredList.forEach((bunny) => startPriceRealtime(bunny.bunny_name));
+    //     }
+    //     return () => {
+    //         if (filteredList.length > 0) {
+    //             filteredList.forEach((bunny) => stopPriceRealtime(bunny.bunny_name));
+    //         }
+    //     };
+    // }, [filteredList, startPriceRealtime, stopPriceRealtime]);
 
     return (
         <List
             fieldList={fieldList}
-            dataList={filteredList}
+            dataList={filteredList.slice(0, 15)}
             backgroundColor="rgba(255, 255, 255, 0.05)"
         />
     );
 }
 
 export function BunnyListContainer() {
-    const { bunnies, fetchBunnies, filters, status, startPriceRealtime, stopPriceRealtime } = useBunnyStore();
+    const { bunnies, fetchBunnies, filters, status } = useBunnyStore();
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
+    const size = 15;
 
     const filteredBunnies = bunnies.filter((bunny) => {
         if (
@@ -100,23 +94,17 @@ export function BunnyListContainer() {
         fetchBunnies({ sortType: "", page, size });
     }, [page, size, fetchBunnies]);
 
-    // 실시간 가격 구독 시작
-    useEffect(() => {
-        if (filteredBunnies.length > 0) {
-            filteredBunnies.forEach((bunny) => {
-                startPriceRealtime(bunny.bunny_name);
-            });
-        }
-
-        // 컴포넌트 언마운트 시 구독 해제
-        return () => {
-            if (filteredBunnies.length > 0) {
-                filteredBunnies.forEach((bunny) => {
-                    stopPriceRealtime(bunny.bunny_name);
-                });
-            }
-        };
-    }, [filteredBunnies, startPriceRealtime, stopPriceRealtime]);
+    // // 실시간 가격 구독 (WebSocket — 주석처리)
+    // useEffect(() => {
+    //     if (filteredBunnies.length > 0) {
+    //         filteredBunnies.forEach((bunny) => startPriceRealtime(bunny.bunny_name));
+    //     }
+    //     return () => {
+    //         if (filteredBunnies.length > 0) {
+    //             filteredBunnies.forEach((bunny) => stopPriceRealtime(bunny.bunny_name));
+    //         }
+    //     };
+    // }, [filteredBunnies, startPriceRealtime, stopPriceRealtime]);
 
     if (status.bunnies.isLoading)
         return (
@@ -138,10 +126,10 @@ export function BunnyListContainer() {
                 dataList={filteredBunnies}
                 backgroundColor="rgba(255, 255, 255, 0.05)"
             />
-            <div style={{ textAlign: "center", marginTop: "1rem" }}>
+            <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
                 <LoadMoreButton
                     disabled={status.bunnies.isLoading}
-                    onClick={() => setPage((page) => page + 1)}
+                    onClick={() => setPage((p) => p + 1)}
                 >
                     {status.bunnies.isLoading ? "로딩 중..." : "더보기"}
                 </LoadMoreButton>

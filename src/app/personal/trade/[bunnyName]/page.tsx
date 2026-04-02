@@ -12,10 +12,11 @@ import TradeBlock from "../components/Trade";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useBunnyStore, Bunny } from "../../../_store/bunnyStore";
-import { getChart, ChartData } from "../../../_api/bunnyAPI";
+import { ChartData } from "../../../_api/bunnyAPI";
+import { DUMMY_CHART_DATA } from "../../../_dummy/chart";
 import { Cctv } from "lucide-react";
 import SpaceBackground from "../../../_shared/components/SpaceBackground";
-import { webSocketService } from "../../../_utils/websocket";
+// import { webSocketService } from "../../../_utils/websocket";
 
 export default function Trade() {
     const params = useParams();
@@ -40,24 +41,26 @@ export default function Trade() {
     }, [allBunnies, bunnyName, getBunnyByName]);
 
     // 차트 데이터 가져오기
-    const fetchChartData = async (period: string = "일") => {
+    const fetchChartData = (period: string = "일") => {
         if (!currentBunny?.bunny_name) return;
 
-        setChartLoading(true);
-        try {
-            const interval =
-                period === "일"
-                    ? "DAILY"
-                    : period === "주"
-                    ? "WEEKLY"
-                    : "MONTHLY";
-            const data = await getChart(currentBunny.bunny_name, interval);
-            setChartData(data);
-        } catch (error) {
-            console.error("차트 데이터 가져오기 실패:", error);
-        } finally {
-            setChartLoading(false);
-        }
+        const interval =
+            period === "일" ? "DAILY" : period === "주" ? "WEEKLY" : "MONTHLY";
+
+        // 더미 데이터 사용 (API 대체)
+        const data = DUMMY_CHART_DATA[currentBunny.bunny_name]?.[interval] ?? null;
+        setChartData(data);
+
+        // // API 호출 (주석처리)
+        // setChartLoading(true);
+        // try {
+        //     const data = await getChart(currentBunny.bunny_name, interval);
+        //     setChartData(data);
+        // } catch (error) {
+        //     console.error("차트 데이터 가져오기 실패:", error);
+        // } finally {
+        //     setChartLoading(false);
+        // }
     };
 
     const handlePeriodChange = (period: string) => {
@@ -70,26 +73,22 @@ export default function Trade() {
         }
     }, [currentBunny?.bunny_name]);
 
-    // 페이지 진입 시 즉시 웹소켓 연결
-    useEffect(() => {
-        const initializeWebSocket = async () => {
-            try {
-                await webSocketService.connect();
-                console.log('Trade 페이지에서 웹소켓 연결 완료');
-            } catch (error) {
-                console.error('Trade 페이지 웹소켓 연결 실패:', error);
-            }
-        };
-
-        initializeWebSocket();
-
-        // 페이지 언마운트 시 웹소켓 정리
-        return () => {
-            if (currentBunny?.bunny_name) {
-                webSocketService.unsubscribeFromOrderBook(currentBunny.bunny_name);
-            }
-        };
-    }, [currentBunny?.bunny_name]);
+    // // 웹소켓 연결 (주석처리)
+    // useEffect(() => {
+    //     const initializeWebSocket = async () => {
+    //         try {
+    //             await webSocketService.connect();
+    //         } catch (error) {
+    //             console.error('Trade 페이지 웹소켓 연결 실패:', error);
+    //         }
+    //     };
+    //     initializeWebSocket();
+    //     return () => {
+    //         if (currentBunny?.bunny_name) {
+    //             webSocketService.unsubscribeFromOrderBook(currentBunny.bunny_name);
+    //         }
+    //     };
+    // }, [currentBunny?.bunny_name]);
 
     if (status.allBunnies.isLoading) {
         return (

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import { Bunny, useBunnyStore } from "../../../_store/bunnyStore";
 import { getOrderBookSnapshot, OrderBookData, cancelOrder, getOrderList } from "../../../_api/bunnyAPI";
-import { webSocketService, OrderBookSnapshot, OrderBookDiff } from "../../../_utils/websocket";
+// import { webSocketService, OrderBookSnapshot, OrderBookDiff } from "../../../_utils/websocket";
 
 interface OrderItem {
   id: number;
@@ -36,8 +36,7 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
   const wsConnected = useRef(false);
   const orderItemsContainerRef = useRef<HTMLDivElement>(null);
   
-  // 웹소켓 실시간 현재가 데이터 가져오기
-  const { bunnies, allBunnies, startPriceRealtime, stopPriceRealtime } = useBunnyStore();
+  const { bunnies, allBunnies } = useBunnyStore();
   const bunnyName = bunny.bunny_name;
   
   // 스토어에서 동일 bunny 찾기 (실시간 값 우선)
@@ -128,41 +127,10 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
     }
   };
 
-  // WebSocket 연결 상태 확인 및 필요시 연결
-  const ensureWebSocketConnection = async () => {
-    try {
-      // 이미 연결되어 있는지 확인
-      if (webSocketService.client?.connected) {
-        wsConnected.current = true;
-        console.log('WebSocket 이미 연결됨');
-        return;
-      }
-      
-      // 연결되지 않은 경우에만 연결 시도
-      await webSocketService.connect();
-      wsConnected.current = true;
-      console.log('WebSocket 연결 완료');
-    } catch (error) {
-      console.error('WebSocket 연결 실패:', error);
-      wsConnected.current = false;
-    }
-  };
-
-  // 호가창 스냅샷 처리
-  const handleOrderBookSnapshot = (snapshot: OrderBookSnapshot) => {
-    console.log('호가창 스냅샷 수신:', snapshot);
-  
-    setOrderBookData(snapshot);
-  };
-
-  // 호가창 차이 처리 - diff 처리가 복잡하므로 스냅샷 재요청
-  const handleOrderBookDiff = (diff: OrderBookDiff) => {
-    console.log('호가창 차이 수신, 전체 스냅샷 재요청:', diff);
-    // diff 처리 대신 전체 스냅샷을 다시 요청하는 것이 더 안전함
-    if (wsConnected.current) {
-      webSocketService.requestOrderBookSnapshot(bunny.bunny_name);
-    }
-  };
+  // // WebSocket 연결 및 호가창 핸들러 (주석처리)
+  // const ensureWebSocketConnection = async () => { ... };
+  // const handleOrderBookSnapshot = (snapshot: OrderBookSnapshot) => { ... };
+  // const handleOrderBookDiff = (diff: OrderBookDiff) => { ... };
 
   const fetchOrderHistory = async () => {
     setIsLoading(true);
@@ -193,31 +161,8 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
   const fetchOrderBook = async () => {
     setIsLoading(true);
     try {
-      // 1. 웹소켓 연결 상태 확인 및 필요시 연결
-      await ensureWebSocketConnection();
-      
-      if (wsConnected.current) {
-        // 2. REST API로 초기 스냅샷 가져오기
-        console.log('REST API로 스냅샷 요청:', bunny.bunny_name);
-        const snapshot = await getOrderBookSnapshot(bunny.bunny_name);
-        console.log('스냅샷 수신:', snapshot);
-        
-        // 3. 스냅샷으로 상태 세팅
-        setOrderBookData(snapshot);
-        
-        // 4. WebSocket 구독 시작
-        console.log('WebSocket 구독 시작:', bunny.bunny_name);
-        webSocketService.subscribeToOrderBook(
-          bunny.bunny_name,
-          handleOrderBookSnapshot,
-          handleOrderBookDiff
-        );
-      } else {
-        // HTTP API로 폴백
-        console.log('웹소켓 연결 실패, HTTP API로 폴백');
-        const data = await getOrderBookSnapshot(bunny.bunny_name);
-        setOrderBookData(data);
-      }
+      const data = await getOrderBookSnapshot(bunny.bunny_name);
+      setOrderBookData(data);
     } catch (error) {
       console.error('Orderbook 데이터 가져오기 실패:', error);
       setOrderBookData(null);
@@ -239,13 +184,13 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
     }
   };
 
-  // 웹소켓 실시간 가격 구독
-  useEffect(() => {
-    startPriceRealtime(bunnyName);
-    return () => {
-      stopPriceRealtime(bunnyName);
-    };
-  }, [bunnyName, startPriceRealtime, stopPriceRealtime]);
+  // // 웹소켓 실시간 가격 구독 (주석처리)
+  // useEffect(() => {
+  //   startPriceRealtime(bunnyName);
+  //   return () => {
+  //     stopPriceRealtime(bunnyName);
+  //   };
+  // }, [bunnyName, startPriceRealtime, stopPriceRealtime]);
 
   useEffect(() => {
     if (bunny.bunny_name) {
@@ -269,16 +214,14 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
     }
   }, [orderBookData, currentPrice]);
 
-  // 컴포넌트 언마운트 시 WebSocket 정리
-  useEffect(() => {
-    return () => {
-      // 컴포넌트 언마운트 시 해당 버니의 구독만 해제
-      if (bunny.bunny_name) {
-        webSocketService.unsubscribeFromOrderBook(bunny.bunny_name);
-      }
-      // 웹소켓 연결은 페이지 레벨에서 관리하므로 여기서는 해제하지 않음
-    };
-  }, [bunny.bunny_name]);
+  // // 컴포넌트 언마운트 시 WebSocket 정리 (주석처리)
+  // useEffect(() => {
+  //   return () => {
+  //     if (bunny.bunny_name) {
+  //       webSocketService.unsubscribeFromOrderBook(bunny.bunny_name);
+  //     }
+  //   };
+  // }, [bunny.bunny_name]);
 
 
 

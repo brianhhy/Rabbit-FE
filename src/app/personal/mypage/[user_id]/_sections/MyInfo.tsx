@@ -11,14 +11,15 @@ import Position from "../_components/my-info/Position";
 import Stack from "../_components/my-info/Stack";
 import InfoRow from "../_components/my-info/InfoRow";
 import {
-    getInfo,
     MyInfo as MyInfoType,
-    postUpload,
-    putInfo,
+    // getInfo,
+    // postUpload,
+    // putInfo,
 } from "@/app/_api/userAPI";
 import { useUserStore } from "@/app/_store/userStore";
 import { Loading } from "@/app/_shared/components";
 import LoadingComponent from "../_components/my-info/LoadingComponent";
+import { DUMMY_MY_INFO } from "@/app/_dummy/info";
 
 type FieldType = "string" | "select" | "date" | "file";
 
@@ -50,17 +51,20 @@ function MyInfo({ onShowModal }: MyInfoProps) {
     const coinName = user?.my_bunny_name ?? "";
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await getInfo();
-                setInfoData(data);
-                console.log(data, " : fetchData에서 받아온 data");
-            } catch (error) {
-                console.error(error);
-            }
-        };
+        // 더미 데이터 사용 (API 대체)
+        setInfoData(DUMMY_MY_INFO);
 
-        fetchData();
+        // // API 호출 (주석처리)
+        // const fetchData = async () => {
+        //     try {
+        //         const data = await getInfo();
+        //         setInfoData(data);
+        //         console.log(data, " : fetchData에서 받아온 data");
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+        // fetchData();
     }, []);
 
     useEffect(() => {
@@ -139,58 +143,44 @@ function MyInfo({ onShowModal }: MyInfoProps) {
     const onSubmit = async (data: any) => {
         console.log("저장하기 클릭 시 폼 전체 값:", data);
 
-        const uploadFile = async (file: File | string) => {
-            if (file instanceof File) {
-                const url = await postUpload(file); // 파일 → URL
-                return url;
-            }
-            return file; // 이미 URL이면 그대로
-        };
+        // 더미 데이터 사용 — 저장 동작은 성공 모달만 표시
+        onShowModal('success', '저장 완료! 🎉', '정보가 성공적으로 저장되었습니다.\n변경사항이 반영되었어요!');
 
-        // education 배열 처리
-        const education = await Promise.all(
-            data.education.map(async (edu: any) => ({
-                ...edu,
-                certificate_url: await uploadFile(edu.certificate_url),
-            }))
-        );
-
-        // career 배열 처리
-        const career = await Promise.all(
-            data.career.map(async (car: any) => ({
-                ...car,
-                certificate_url: await uploadFile(car.certificate_url),
-            }))
-        );
-
-        // certification 배열 처리
-        const certification = await Promise.all(
-            data.certification.map(async (cer: any) => ({
-                ...cer,
-                certificate_url: await uploadFile(cer.certificate_url),
-            }))
-        );
-
-        // 최종 payload
-        const payload = {
-            ...data,
-            education,
-            career,
-            certification,
-        };
-
-        console.log("파일->URL 변경", payload);
-
-        try {
-            const response = await putInfo(payload);
-            console.log("서버 저장 완료", response);
-
-            onShowModal('success', '저장 완료! 🎉', '정보가 성공적으로 저장되었습니다.\n변경사항이 반영되었어요!');
-        } catch (error) {
-            console.error("저장 실패", error);
-            
-            onShowModal('error', '저장 실패 😢', '정보 저장 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
-        }
+        // // API 호출 (주석처리)
+        // const uploadFile = async (file: File | string) => {
+        //     if (file instanceof File) {
+        //         const url = await postUpload(file);
+        //         return url;
+        //     }
+        //     return file;
+        // };
+        // const education = await Promise.all(
+        //     data.education.map(async (edu: any) => ({
+        //         ...edu,
+        //         certificate_url: await uploadFile(edu.certificate_url),
+        //     }))
+        // );
+        // const career = await Promise.all(
+        //     data.career.map(async (car: any) => ({
+        //         ...car,
+        //         certificate_url: await uploadFile(car.certificate_url),
+        //     }))
+        // );
+        // const certification = await Promise.all(
+        //     data.certification.map(async (cer: any) => ({
+        //         ...cer,
+        //         certificate_url: await uploadFile(cer.certificate_url),
+        //     }))
+        // );
+        // const payload = { ...data, education, career, certification };
+        // try {
+        //     const response = await putInfo(payload);
+        //     console.log("서버 저장 완료", response);
+        //     onShowModal('success', '저장 완료! 🎉', '정보가 성공적으로 저장되었습니다.\n변경사항이 반영되었어요!');
+        // } catch (error) {
+        //     console.error("저장 실패", error);
+        //     onShowModal('error', '저장 실패 😢', '정보 저장 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
+        // }
     };
     const {
         handleSubmit,

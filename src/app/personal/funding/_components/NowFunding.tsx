@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import FundBunnyCard from "./FundBunnyCard";
@@ -10,18 +10,31 @@ export default function NowFunding() {
     const router = useRouter();
     const { fundBunnies } = useFundingStore();
 
-    const nowFundingBunnies = useMemo(() => {
-        const bunniesArray = Array.isArray(fundBunnies) ? fundBunnies : [];
+    type NowBunny = {
+        fund_bunny_id: string;
+        bunny_name: string;
+        bunny_type: string;
+        end_at: string;
+        collected_bny: number;
+        target_bny: number;
+        avatarSrc: string;
+    };
 
-        return bunniesArray.slice(0, 3).map((bunny) => ({
-            fund_bunny_id: bunny.fund_bunny_id,
-            bunny_name: bunny.bunny_name,
-            bunny_type: bunny.bunny_type,
-            end_at: bunny.end_at,
-            collected_bny: bunny.collected_bny,
-            target_bny: bunny.target_bny,
-            avatarSrc: bunny.image || "/images/personal/funding/astronaut.png",
-        }));
+    const [nowFundingBunnies, setNowFundingBunnies] = useState<NowBunny[]>([]);
+
+    useEffect(() => {
+        const bunniesArray = Array.isArray(fundBunnies) ? fundBunnies : [];
+        setNowFundingBunnies(
+            bunniesArray.slice(0, 3).map((bunny) => ({
+                fund_bunny_id: bunny.fund_bunny_id,
+                bunny_name: bunny.bunny_name,
+                bunny_type: bunny.bunny_type,
+                end_at: bunny.end_at,
+                collected_bny: bunny.collected_bny,
+                target_bny: bunny.target_bny,
+                avatarSrc: bunny.image || "/images/personal/funding/astronaut.png",
+            }))
+        );
     }, [fundBunnies]);
 
     return (

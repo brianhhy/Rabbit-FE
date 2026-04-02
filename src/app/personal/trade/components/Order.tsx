@@ -6,11 +6,11 @@ import { Bunny, useBunnyStore } from "../../../_store/bunnyStore";
 import { useUserStore } from "../../../_store/userStore";
 import { validateOrderAmount, handlePriceIncrease } from '../utils/orderValidate';
 import { createOrder, getBunnyContext } from '../../../_api/bunnyAPI';
-import {
-  webSocketService,
-  OrderBookSnapshot,
-  OrderBookDiff
-} from '../../../_utils/websocket';
+// import {
+//   webSocketService,
+//   OrderBookSnapshot,
+//   OrderBookDiff
+// } from '../../../_utils/websocket';
 import ResultModal from '../../../_shared/modal/Result';
 
 interface OrderProps {
@@ -37,8 +37,8 @@ export default function Order({ activeTab, setActiveTab, bunny }: OrderProps) {
   const [price, setPrice] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
   const [bunnyContext, setBunnyContext] = useState<BunnyContext | null>(null);
-  const [orderBook, setOrderBook] = useState<OrderBookSnapshot | null>(null);
-  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+  // const [orderBook, setOrderBook] = useState<OrderBookSnapshot | null>(null);
+  // const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [resultType, setResultType] = useState<'success' | 'error'>('success');
   const [resultMessage, setResultMessage] = useState('');
@@ -60,73 +60,27 @@ export default function Order({ activeTab, setActiveTab, bunny }: OrderProps) {
     return () => { mounted = false; };
   }, [bunny.bunny_name]);
 
-  // 2) 웹소켓 연결 + 호가창 스냅샷 요청 + 구독 설정
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      try {
-        await webSocketService.connect();
-        if (!mounted) return;
-        setIsWebSocketConnected(true);
-
-        // 최초 1회 스냅샷 요청
-        webSocketService.requestOrderBookSnapshot(bunny.bunny_name);
-
-        // 실시간 호가창 구독(스냅샷/디프 분기)
-        webSocketService.subscribeToOrderBook(
-          bunny.bunny_name,
-          (snapshot: OrderBookSnapshot) => {
-            setOrderBook(snapshot);
-          },
-          (diff: OrderBookDiff) => {
-            setOrderBook((prev) => {
-              if (!prev) return null;
-
-              const next = { ...prev };
-
-              // orderUpserts 처리 (매수/매도 통합)
-              if (diff.orderUpserts && Array.isArray(diff.orderUpserts)) {
-                diff.orderUpserts.forEach((order) => {
-                  const i = next.orders.findIndex((o) => o.price === order.price && o.type === order.type);
-                  if (i >= 0) next.orders[i] = { ...order };
-                  else next.orders.push({ ...order });
-                });
-              }
-
-              // orderDeletes 처리 (가격 배열)
-              if (diff.orderDeletes && Array.isArray(diff.orderDeletes)) {
-                diff.orderDeletes.forEach((price) => {
-                  next.orders = next.orders.filter((o) => o.price !== price);
-                });
-              }
-
-              // 현재가 갱신
-              if (typeof diff.currentPrice === 'number') {
-                next.currentPrice = diff.currentPrice;
-              }
-
-              return next;
-            });
-          }
-        );
-      } catch (error) {
-        console.error('웹소켓 연결 실패:', error);
-        if (mounted) setIsWebSocketConnected(false);
-      }
-    })();
-
-    // cleanup: 구독 해제만 여기서 수행
-    return () => {
-      mounted = false;
-      webSocketService.unsubscribeFromOrderBook(bunny.bunny_name);
-    };
-  }, [bunny.bunny_name]);
+  // // 웹소켓 연결 + 호가창 구독 (주석처리)
+  // useEffect(() => {
+  //   let mounted = true;
+  //   (async () => {
+  //     try {
+  //       await webSocketService.connect();
+  //       if (!mounted) return;
+  //       setIsWebSocketConnected(true);
+  //       webSocketService.requestOrderBookSnapshot(bunny.bunny_name);
+  //       webSocketService.subscribeToOrderBook(bunny.bunny_name, ...);
+  //     } catch (error) {
+  //       if (mounted) setIsWebSocketConnected(false);
+  //     }
+  //   })();
+  //   return () => { mounted = false; webSocketService.unsubscribeFromOrderBook(bunny.bunny_name); };
+  // }, [bunny.bunny_name]);
 
   // 현재 가격 가져오기 (실시간 업데이트된 가격 우선)
   const getCurrentPrice = () => {
     const storeBunny = getBunnyByName(bunny.bunny_name);
-    return storeBunny?.current_price || orderBook?.currentPrice || bunny.current_price;
+    return storeBunny?.current_price || bunny.current_price;
   };
 
   // 가격 범위 계산 (±50%)

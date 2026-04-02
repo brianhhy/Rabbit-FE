@@ -9,6 +9,21 @@ import "swiper/css/pagination";
 import { Pagination, Autoplay } from "swiper/modules";
 
 function Banner() {
+    const [coffeeIcons, setCoffeeIcons] = useState<
+        Array<{ left: string; top: string; duration: string; delay: string }>
+    >([]);
+
+    useEffect(() => {
+        setCoffeeIcons(
+            Array.from({ length: 8 }, () => ({
+                left: `${20 + Math.random() * 60}%`,
+                top: `${20 + Math.random() * 60}%`,
+                duration: `${3 + Math.random() * 2}s`,
+                delay: `${Math.random() * 2}s`,
+            }))
+        );
+    }, []);
+
     const coffeeFeatures = [
         {
             icon: "👤",
@@ -215,13 +230,13 @@ function Banner() {
             >
                 <CoffeeSlideContainer>
                     <CoffeeBackground />
-                    {[...Array(8)].map((_, i) => (
+                    {coffeeIcons.map((icon, i) => (
                         <FloatingCoffeeIcon
                             key={i}
-                            left={`${20 + Math.random() * 60}%`}
-                            top={`${20 + Math.random() * 60}%`}
-                            duration={`${3 + Math.random() * 2}s`}
-                            delay={`${Math.random() * 2}s`}
+                            left={icon.left}
+                            top={icon.top}
+                            duration={icon.duration}
+                            delay={icon.delay}
                         />
                     ))}
                     <CoffeeContentSection>

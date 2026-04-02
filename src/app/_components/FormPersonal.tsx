@@ -1,11 +1,13 @@
+'use client';
+
 import styled from 'styled-components';
 import Image from 'next/image';
 import { User } from 'lucide-react';
-import { useUserStore } from "@/app/_store/userStore";
+import { useRouter } from 'next/navigation';
 
 export default function FormPersonal() {
-    const { authActions } = useUserStore();
-    
+    const router = useRouter();
+
     return (
         <Container>
             <HeroSection>
@@ -48,16 +50,16 @@ export default function FormPersonal() {
                     <Divider />
                 </SocialLoginHeader>
                 <SocialButtonGrid>
-                    <SocialButton type="google" onClick={() => authActions.login("google")}>
+                    <SocialButton type="google" onClick={() => router.push('/personal/home')}>
                         <Image src="/images/login/google.jpg" alt="Google" width={18} height={18} />
                     </SocialButton>
-                    <SocialButton type="kakao" onClick={() => authActions.login("kakao")}>
+                    <SocialButton type="kakao" onClick={() => router.push('/personal/home')}>
                         <Image src="/images/login/kakao.png" alt="Kakao" width={18} height={18} />
                     </SocialButton>
-                    <SocialButton type="naver" onClick={() => authActions.login("naver")}>
+                    <SocialButton type="naver" onClick={() => router.push('/personal/home')}>
                         <Image src="/images/login/naver.png" alt="Naver" width={18} height={18} />
                     </SocialButton>
-                    <SocialButton type="github" onClick={() => authActions.login("github")}>
+                    <SocialButton type="github" onClick={() => router.push('/personal/home')}>
                         <Image src="/images/login/github.png" alt="GitHub" width={18} height={18} />
                     </SocialButton>
                 </SocialButtonGrid>

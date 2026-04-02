@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import axios from 'axios';
+// import axios from 'axios';
+import { DUMMY_FUND_BUNNIES } from '../_dummy/bunny';
 
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const TEST_TOKEN = process.env.NEXT_PUBLIC_TEST_TOKEN;
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+// const TEST_TOKEN = process.env.NEXT_PUBLIC_TEST_TOKEN;
 
 export interface FetchFundBunniesParams {
     sortType?: string;
@@ -40,44 +40,28 @@ export const useFundingStore = create<FundingState>((set, get) => ({
     error: null,
 
     fetchFundBunnies: async (params: FetchFundBunniesParams = {}) => {
-        const { sortType = 'newest', page = 0, size = 30 } = params;
-        
-        set({ isLoading: true, error: null });
-        
-        try {
-            const url = new URL(`${API_BASE_URL}/fund-bunnies`, window.location.origin);
-            url.searchParams.append('page', page.toString());
-            url.searchParams.append('size', size.toString());
-            url.searchParams.append('sortType', sortType);
-            
-            console.log('API 호출 URL:', url.toString());
-            
-            const response = await axios.get(url.toString(), {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${TEST_TOKEN}`
+        const { sortType = 'newest', page = 0 } = params;
 
-                }
-            });
-            
-            const newFundBunnies = response.data.fund_bunnies;
+        // // API 호출 (주석처리)
+        // const url = new URL(`${API_BASE_URL}/fund-bunnies`, window.location.origin);
+        // ...
 
-            console.log('받은 데이터:', newFundBunnies);
-            
-            // 페이지가 0이면 교체, 0보다 크면 추가
-            if (page === 0) {
-                set({ fundBunnies: newFundBunnies, isLoading: false });
-            } else {
-                const currentFundBunnies = get().fundBunnies;
-                set({ fundBunnies: [...currentFundBunnies, ...newFundBunnies], isLoading: false });
-            }
-        } catch (error) {
-            console.error('API 호출 실패:', error);
-            set({ 
-                error: '데이터를 불러오는데 실패했습니다.',
-                isLoading: false
-            });
+        let sorted = [...DUMMY_FUND_BUNNIES];
+        if (sortType === 'oldest') {
+            sorted = sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        } else if (sortType === 'mostInvested') {
+            sorted = sorted.sort((a, b) => b.collected_bny - a.collected_bny);
+        } else if (sortType === 'leastInvested') {
+            sorted = sorted.sort((a, b) => a.collected_bny - b.collected_bny);
+        } else {
+            sorted = sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        }
+
+        if (page === 0) {
+            set({ fundBunnies: sorted, isLoading: false });
+        } else {
+            const currentFundBunnies = get().fundBunnies;
+            set({ fundBunnies: [...currentFundBunnies, ...sorted], isLoading: false });
         }
     },
 

@@ -75,7 +75,6 @@ const Footer: React.FC = () => {
 const FooterContainer = styled.footer`
   width: 100%;
   background: transparent;
-  margin-top: auto;
   position: relative;
   z-index: 10;
 `;
@@ -83,10 +82,10 @@ const FooterContainer = styled.footer`
 const FooterContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 60px 40px 30px;
-  
+  padding: 20px 40px 16px;
+
   @media (max-width: 768px) {
-    padding: 40px 20px 20px;
+    padding: 16px 20px 12px;
   }
 `;
 
@@ -94,12 +93,12 @@ const FooterTop = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 40px;
-  
+  margin-bottom: 12px;
+
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 `;
 

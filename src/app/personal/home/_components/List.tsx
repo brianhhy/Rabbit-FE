@@ -79,6 +79,26 @@ function PriceCell({ value, fieldKey, rowData }: { value: any; fieldKey: string;
 
 function List<T>({ fieldList, dataList, backgroundColor }: ListProps<T>) {
     const router = useRouter();
+    const rowContainerRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
+    const startY = useRef(0);
+    const scrollTopStart = useRef(0);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        isDragging.current = true;
+        startY.current = e.clientY;
+        scrollTopStart.current = rowContainerRef.current?.scrollTop ?? 0;
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging.current || !rowContainerRef.current) return;
+        rowContainerRef.current.scrollTop = scrollTopStart.current - (e.clientY - startY.current);
+    };
+
+    const handleMouseUp = () => {
+        isDragging.current = false;
+    };
+
     return (
         <Div $backgroundColor={backgroundColor}>
             <FieldContainer $fieldNum={fieldList.length}>
@@ -86,7 +106,13 @@ function List<T>({ fieldList, dataList, backgroundColor }: ListProps<T>) {
                     <span key={field.key}>{field.label}</span>
                 ))}
             </FieldContainer>
-            <RowContainer>
+            <RowContainer
+                ref={rowContainerRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+            >
                 {!dataList || dataList.length === 0 ? (
                     <EmptyRowMessage>
                         로켓에 탑승하고 있는 버니가 없어요
@@ -300,6 +326,12 @@ const RowContainer = styled.div`
     max-height: 800px;
     gap: 0.4rem;
     padding: 0.5rem;
+    cursor: grab;
+    user-select: none;
+
+    &:active {
+        cursor: grabbing;
+    }
 
     -ms-overflow-style: none;
     scrollbar-width: none;

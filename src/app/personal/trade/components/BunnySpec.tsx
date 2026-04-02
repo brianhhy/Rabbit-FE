@@ -2,6 +2,7 @@
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
 import { Bunny } from "../../../_store/bunnyStore";
+import { DUMMY_SPECS } from "../../../_dummy/bunny";
 
 interface Link {
   sns_id: string;
@@ -63,8 +64,8 @@ interface BunnySpecProps {
 }
 
 export default function BunnySpec({ bunny }: BunnySpecProps) {
-  const spec = bunny.spec;
-  
+  const spec = bunny.spec ?? DUMMY_SPECS[bunny.bunny_name];
+
   if (!spec) {
     return <div>스펙 정보가 없습니다.</div>;
   }

@@ -5,14 +5,19 @@ import { useEffect, useState } from "react";
 import ListButton from "../_components/my-list/ListButton";
 import {
     BunnyStats,
-    getHoldBunnies,
-    getHoldBunniesStats,
-    getMatches,
-    getOrders,
     HoldBunny,
     MatchBunny,
     OrderBunny,
+    // getHoldBunnies,
+    // getHoldBunniesStats,
+    // getMatches,
+    // getOrders,
 } from "@/app/_api/userAPI";
+import {
+    DUMMY_HOLD_BUNNIES,
+    DUMMY_BUNNY_STATS,
+    DUMMY_ORDERS,
+} from "@/app/_dummy/holdbunny";
 import Top1Container from "../_components/my-bunny/Top1Container";
 import { useUserStore } from "@/app/_store/userStore";
 
@@ -123,57 +128,62 @@ function MyBunnyList() {
     };
 
     useEffect(() => {
-        const fetchBunnyStats = async () => {
-            try {
-                const data = await getHoldBunniesStats();
-                setBunnyStats(data);
-                console.log("fetchData에서 받아온 holdBunnyStats", data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchBunnyStats();
-    }, []);
+        // 더미 데이터 사용 (API 대체)
+        setBunnyStats(DUMMY_BUNNY_STATS);
+        setHoldDataList(DUMMY_HOLD_BUNNIES);
 
-    useEffect(() => {
-        const fetchHoldBunnies = async () => {
-            try {
-                const data = await getHoldBunnies();
-                setHoldDataList(data.hold_bunnies);
-                console.log(
-                    "fetchData에서 받아온 holdBunny",
-                    data.hold_bunnies
-                );
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchHoldBunnies();
-    }, []);
+        const orderItems: OrderItem[] = DUMMY_ORDERS.map((order: OrderBunny) => ({
+            matched_at: "-",
+            ordered_at: order.ordered_at,
+            bunny_name: order.bunny_name,
+            quantity: order.quantity,
+            price: order.unit_price,
+            fee: order.fee,
+            amount: order.total_amount,
+            order_type: order.order_type,
+        }));
+        setOrderDataList(orderItems);
 
-    useEffect(() => {
-        const fetchOrderBunnies = async () => {
-            try {
-                const orderData = await getOrders();
+        // // API 호출 (주석처리)
+        // const fetchBunnyStats = async () => {
+        //     try {
+        //         const data = await getHoldBunniesStats();
+        //         setBunnyStats(data);
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+        // fetchBunnyStats();
 
-                const orderItems: OrderItem[] = orderData.orders.map(
-                    (order: OrderBunny) => ({
-                        matched_at: "-",
-                        ordered_at: order.ordered_at,
-                        bunny_name: order.bunny_name,
-                        quantity: order.quantity,
-                        price: order.unit_price,
-                        fee: order.fee,
-                        amount: order.total_amount,
-                        order_type: order.order_type,
-                    })
-                );
-                setOrderDataList(orderItems);
-            } catch (error) {
-                console.error("order 리스트 받기 실패", error);
-            }
-        };
-        fetchOrderBunnies();
+        // const fetchHoldBunnies = async () => {
+        //     try {
+        //         const data = await getHoldBunnies();
+        //         setHoldDataList(data.hold_bunnies);
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+        // fetchHoldBunnies();
+
+        // const fetchOrderBunnies = async () => {
+        //     try {
+        //         const orderData = await getOrders();
+        //         const orderItems: OrderItem[] = orderData.orders.map((order: OrderBunny) => ({
+        //             matched_at: "-",
+        //             ordered_at: order.ordered_at,
+        //             bunny_name: order.bunny_name,
+        //             quantity: order.quantity,
+        //             price: order.unit_price,
+        //             fee: order.fee,
+        //             amount: order.total_amount,
+        //             order_type: order.order_type,
+        //         }));
+        //         setOrderDataList(orderItems);
+        //     } catch (error) {
+        //         console.error("order 리스트 받기 실패", error);
+        //     }
+        // };
+        // fetchOrderBunnies();
     }, []);
 
     return (
