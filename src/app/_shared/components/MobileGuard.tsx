@@ -17,7 +17,8 @@ export default function MobileGuard({ children }: { children: React.ReactNode })
     }, []);
 
     const handleCopyLink = () => {
-        navigator.clipboard.writeText(window.location.href);
+        const url = window.location.href.replace(/^https?:\/\/[^/]+/, "https://rabbit.goodrelation.xyz");
+        navigator.clipboard.writeText(url);
     };
 
     if (!mounted) return <>{children}</>;
