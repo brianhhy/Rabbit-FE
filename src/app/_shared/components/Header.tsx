@@ -267,7 +267,7 @@ const ProfileName = styled.div`
     margin-right: 15px;
     font-size: 14px;
     font-weight: 700;
-    color: #ffffff;
+    color: #1a1a1a;
 `;
 
 const ProfileImage = styled.div<{ $url: string }>`

@@ -11,34 +11,29 @@ import CurrentPrice from "../components/CurrentPrice";
 import TradeBlock from "../components/Trade";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useBunnyStore, Bunny } from "../../../_store/bunnyStore";
+import { Bunny } from "../../../_store/bunnyStore";
+// import { useBunnyStore } from "../../../_store/bunnyStore"; // 주석처리 (더미 데이터 사용)
 import { ChartData } from "../../../_api/bunnyAPI";
 import { DUMMY_CHART_DATA } from "../../../_dummy/chart";
-import { Cctv } from "lucide-react";
+import { DUMMY_BUNNIES } from "../../../_dummy/bunny";
 import SpaceBackground from "../../../_shared/components/SpaceBackground";
 // import { webSocketService } from "../../../_utils/websocket";
 
 export default function Trade() {
     const params = useParams();
     const bunnyName = params.bunnyName as string;
-    const { allBunnies, fetchAllBunnies, getBunnyByName, status } =
-        useBunnyStore();
+    // const { allBunnies, fetchAllBunnies, getBunnyByName, status } = useBunnyStore(); // 주석처리
     const [currentBunny, setCurrentBunny] = useState<Bunny | null>(null);
     const [chartData, setChartData] = useState<ChartData | null>(null);
     const [chartLoading, setChartLoading] = useState(false);
 
+    // 더미 데이터에서 bunny 직접 조회
     useEffect(() => {
-        if (!allBunnies || allBunnies.length === 0) {
-            fetchAllBunnies();
+        if (bunnyName) {
+            const bunny = DUMMY_BUNNIES.find((b) => b.bunny_name === bunnyName) ?? null;
+            setCurrentBunny(bunny);
         }
-    }, [allBunnies, fetchAllBunnies]);
-
-    useEffect(() => {
-        if (allBunnies.length > 0 && bunnyName) {
-            const bunny = getBunnyByName(bunnyName);
-            setCurrentBunny(bunny || null);
-        }
-    }, [allBunnies, bunnyName, getBunnyByName]);
+    }, [bunnyName]);
 
     // 차트 데이터 가져오기
     const fetchChartData = (period: string = "일") => {
@@ -90,19 +85,7 @@ export default function Trade() {
     //     };
     // }, [currentBunny?.bunny_name]);
 
-    if (status.allBunnies.isLoading) {
-        return (
-            <SpaceBackground>
-                <TradeBackground />
-                <Wrapper>
-                    <Header />
-                    <Container>
-                        <div>로딩 중...</div>
-                    </Container>
-                </Wrapper>
-            </SpaceBackground>
-        );
-    }
+    // if (status.allBunnies.isLoading) { ... } // 주석처리
 
     if (!currentBunny) {
         return (

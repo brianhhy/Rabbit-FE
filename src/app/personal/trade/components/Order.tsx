@@ -2,10 +2,11 @@
 import styled from "styled-components";
 import Button from '../../../_shared/components/Button';
 import { useState, useEffect } from "react";
-import { Bunny, useBunnyStore } from "../../../_store/bunnyStore";
+import { Bunny } from "../../../_store/bunnyStore";
+// import { useBunnyStore } from "../../../_store/bunnyStore"; // 주석처리 (더미 데이터 사용)
 import { useUserStore } from "../../../_store/userStore";
 import { validateOrderAmount, handlePriceIncrease } from '../utils/orderValidate';
-import { createOrder, getBunnyContext } from '../../../_api/bunnyAPI';
+// import { createOrder, getBunnyContext } from '../../../_api/bunnyAPI'; // 주석처리
 // import {
 //   webSocketService,
 //   OrderBookSnapshot,
@@ -42,23 +43,23 @@ export default function Order({ activeTab, setActiveTab, bunny }: OrderProps) {
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [resultType, setResultType] = useState<'success' | 'error'>('success');
   const [resultMessage, setResultMessage] = useState('');
-  const { user, fetchUser } = useUserStore();
-  const { getBunnyByName } = useBunnyStore();
+  const { user } = useUserStore();
+  // const { getBunnyByName } = useBunnyStore(); // 주석처리
 
-  // 1) 컨텍스트(주문 가능 수량/액수 등) 로드
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const context = await getBunnyContext(bunny.bunny_name);
-        if (!mounted) return;
-        setBunnyContext(context);
-      } catch (error) {
-        console.error('Bunny context 가져오기 실패:', error);
-      }
-    })();
-    return () => { mounted = false; };
-  }, [bunny.bunny_name]);
+  // 1) 컨텍스트(주문 가능 수량/액수 등) 로드 — 주석처리 (API 대체)
+  // useEffect(() => {
+  //   let mounted = true;
+  //   (async () => {
+  //     try {
+  //       const context = await getBunnyContext(bunny.bunny_name);
+  //       if (!mounted) return;
+  //       setBunnyContext(context);
+  //     } catch (error) {
+  //       console.error('Bunny context 가져오기 실패:', error);
+  //     }
+  //   })();
+  //   return () => { mounted = false; };
+  // }, [bunny.bunny_name]);
 
   // // 웹소켓 연결 + 호가창 구독 (주석처리)
   // useEffect(() => {
@@ -77,10 +78,9 @@ export default function Order({ activeTab, setActiveTab, bunny }: OrderProps) {
   //   return () => { mounted = false; webSocketService.unsubscribeFromOrderBook(bunny.bunny_name); };
   // }, [bunny.bunny_name]);
 
-  // 현재 가격 가져오기 (실시간 업데이트된 가격 우선)
+  // 현재 가격 (더미 데이터 사용)
   const getCurrentPrice = () => {
-    const storeBunny = getBunnyByName(bunny.bunny_name);
-    return storeBunny?.current_price || bunny.current_price;
+    return bunny.current_price;
   };
 
   // 가격 범위 계산 (±50%)
@@ -128,55 +128,38 @@ export default function Order({ activeTab, setActiveTab, bunny }: OrderProps) {
   const isPriceValid = isPriceInRange(price);
   const isOrderValid = orderValidation.isValid && isPriceValid;
 
-  // 주문 처리
-  const handleOrder = async () => {
-    try {
-      // 입력을 정수로 강제(백엔드: BigDecimal 정수 + @Digits(fraction=0))
-      const qtyStr = toIntInput(quantity);
-      const unitStr = toIntInput(price);
+  // 주문 처리 — API 주석처리 (더미)
+  const handleOrder = () => {
+    const qtyStr = toIntInput(quantity);
+    const unitStr = toIntInput(price);
+    const qty = Number(qtyStr);
+    const unit = Number(unitStr);
 
-      const qty = Number(qtyStr);
-      const unit = Number(unitStr);
-
-      if (!Number.isFinite(qty) || qty <= 0) {
-        setResultType('error');
-        setResultMessage('수량은 0보다 큰 정수여야 합니다.');
-        setIsResultModalOpen(true);
-        return;
-      }
-      if (!Number.isFinite(unit) || unit <= 0) {
-        setResultType('error');
-        setResultMessage('가격은 0보다 큰 정수여야 합니다.');
-        setIsResultModalOpen(true);
-        return;
-      }
-
-      await createOrder(bunny.bunny_name, {
-        quantity: qty,
-        unit_price: unit,
-        order_type: activeTab === '매수' ? 'BUY' : 'SELL',
-      });
-
-      setQuantity('');
-      setPrice('');
-      setResultType('success');
-      setResultMessage(`${activeTab} 주문이 성공적으로 처리되었습니다.`);
-      setIsResultModalOpen(true);
-    } catch (error: any) {
-      console.error('주문 처리 중 오류 발생:', error);
+    if (!Number.isFinite(qty) || qty <= 0) {
       setResultType('error');
-      setResultMessage(error.response?.data?.message || '주문 처리 중 오류가 발생했습니다.');
+      setResultMessage('수량은 0보다 큰 정수여야 합니다.');
       setIsResultModalOpen(true);
+      return;
     }
+    if (!Number.isFinite(unit) || unit <= 0) {
+      setResultType('error');
+      setResultMessage('가격은 0보다 큰 정수여야 합니다.');
+      setIsResultModalOpen(true);
+      return;
+    }
+
+    // await createOrder(...); // 주석처리
+    setQuantity('');
+    setPrice('');
+    setResultType('success');
+    setResultMessage(`${activeTab} 주문이 성공적으로 처리되었습니다.`);
+    setIsResultModalOpen(true);
   };
 
-  const handleResultModalClose = async () => {
+  const handleResultModalClose = () => {
     setIsResultModalOpen(false);
-
-    const updatedContext = await getBunnyContext(bunny.bunny_name);
-    setBunnyContext(updatedContext);
-
-    await fetchUser();
+    // await getBunnyContext(...); // 주석처리
+    // await fetchUser();         // 주석처리
   };
 
   const handleReset = () => {

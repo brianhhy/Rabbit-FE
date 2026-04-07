@@ -1,8 +1,11 @@
 "use client";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { Bunny, useBunnyStore } from "../../../_store/bunnyStore";
-import { getOrderBookSnapshot, OrderBookData, cancelOrder, getOrderList } from "../../../_api/bunnyAPI";
+import { Bunny } from "../../../_store/bunnyStore";
+// import { useBunnyStore } from "../../../_store/bunnyStore"; // 주석처리 (더미 데이터 사용)
+import { OrderBookData } from "../../../_api/bunnyAPI";
+// import { cancelOrder, getOrderList } from "../../../_api/bunnyAPI"; // 주석처리
+import { DUMMY_ORDERBOOK } from "../../../_dummy/buysell";
 // import { webSocketService, OrderBookSnapshot, OrderBookDiff } from "../../../_utils/websocket";
 
 interface OrderItem {
@@ -36,18 +39,11 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
   const wsConnected = useRef(false);
   const orderItemsContainerRef = useRef<HTMLDivElement>(null);
   
-  const { bunnies, allBunnies } = useBunnyStore();
+  // const { bunnies, allBunnies } = useBunnyStore(); // 주석처리
   const bunnyName = bunny.bunny_name;
-  
-  // 스토어에서 동일 bunny 찾기 (실시간 값 우선)
-  const live = useMemo(() => {
-    const foundInAll = allBunnies.find((bunny) => bunny.bunny_name === bunnyName);
-    if (foundInAll) return foundInAll;
-    return bunnies.find((bunny) => bunny.bunny_name === bunnyName);
-  }, [allBunnies, bunnies, bunnyName]);
-  
-  // 실시간 현재가
-  const currentPrice = live?.current_price ?? bunny.current_price ?? 0;
+
+  // 더미 데이터 현재가 직접 사용
+  const currentPrice = bunny.current_price ?? 0;
   
   const maxQuantity = orderBookData && orderBookData.orders.length > 0 ? 
     Math.max(...orderBookData.orders.map(order => order.quantity)) : 0;
@@ -132,57 +128,25 @@ export default function OrderList({ activeOrderTab, setActiveOrderTab, bunny }: 
   // const handleOrderBookSnapshot = (snapshot: OrderBookSnapshot) => { ... };
   // const handleOrderBookDiff = (diff: OrderBookDiff) => { ... };
 
-  const fetchOrderHistory = async () => {
-    setIsLoading(true);
-    try {
-      const response = await getOrderList(bunny.bunny_name);
-      console.log('API 응답 구조:', response);
-      
-      const orderList = response?.orders || [];
-      
-      const mappedOrderHistoryData = orderList.map((orders: any) => ({
-        order_id: orders.order_id,
-        orderTime: formatDateTime(orders.ordered_at),
-        orderType: orders.order_type,
-        quantity: orders.quantity,
-        unitPrice: orders.unit_price,
-        settlementAmount: (orders.quantity || orders.order_quantity || 0) * (orders.unit_price || 0),
-        changeRate: orders.changeRate || '0.00%'
-      }));
-      setOrderHistoryData(mappedOrderHistoryData);
-    } catch (error) {
-      console.error('주문 내역 데이터 가져오기 실패:', error);
-      setOrderHistoryData([]);
-    } finally {
-      setIsLoading(false);
-    }
+  // fetchOrderHistory — API 주석처리
+  // const fetchOrderHistory = async () => {
+  //   const response = await getOrderList(bunny.bunny_name);
+  //   ...
+  // };
+  const fetchOrderHistory = () => {
+    setOrderHistoryData([]);
   };
 
-  const fetchOrderBook = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getOrderBookSnapshot(bunny.bunny_name);
-      setOrderBookData(data);
-    } catch (error) {
-      console.error('Orderbook 데이터 가져오기 실패:', error);
-      setOrderBookData(null);
-    } finally {
-      setIsLoading(false);
-    }
+  const fetchOrderBook = () => {
+    const data = DUMMY_ORDERBOOK[bunny.bunny_name] ?? null;
+    setOrderBookData(data);
   };
 
-  const handleCancelOrder = async (orderId: string) => {
-    if (window.confirm('정말로 이 주문을 취소하시겠습니까?')) {
-      try {
-        await cancelOrder(bunny.bunny_name, orderId.toString());
-        await fetchOrderHistory();
-        alert('주문이 취소되었습니다.');
-      } catch (error) {
-        console.error('주문 취소 실패:', error);
-        alert('주문 취소에 실패했습니다.');
-      }
-    }
-  };
+  // handleCancelOrder — API 주석처리
+  // const handleCancelOrder = async (orderId: string) => {
+  //   await cancelOrder(bunny.bunny_name, orderId.toString());
+  // };
+  const handleCancelOrder = (_orderId: string) => {};
 
   // // 웹소켓 실시간 가격 구독 (주석처리)
   // useEffect(() => {

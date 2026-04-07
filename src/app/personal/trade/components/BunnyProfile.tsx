@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { Bunny, useBunnyStore } from "../../../_store/bunnyStore";
-import { postLike, deleteLike } from "../../../_api/bunnyAPI";
+// import { postLike, deleteLike } from "../../../_api/bunnyAPI"; // 주석처리
 import { getLinkIcon } from "../utils/bunnyInfoMapper";
 import { BadgeData } from "../../home/_constants/constants";
 
@@ -15,43 +15,35 @@ interface ProfileProps {
 
 export default function Profile({ bunny }: ProfileProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { 
-    updateBunnyLikeCount, 
-    getBunnyLikeCount, 
-    fetchBunnyContext, 
+  const {
+    updateBunnyLikeCount,
+    getBunnyLikeCount,
+    // fetchBunnyContext, // 주석처리
     getBunnyContext,
-    updateBunnyContext 
+    updateBunnyContext
   } = useBunnyStore();
 
   const bunnyContext = getBunnyContext(bunny.bunny_name);
   const isLiked = bunnyContext?.is_liked ?? false;
 
-  useEffect(() => {
-    // 컨텍스트가 없으면 가져오기
-    if (!bunnyContext) {
-      fetchBunnyContext(bunny.bunny_name);
-    }
-  }, [bunny.bunny_name, bunnyContext, fetchBunnyContext]);
+  // fetchBunnyContext API 호출 주석처리
+  // useEffect(() => {
+  //   if (!bunnyContext) {
+  //     fetchBunnyContext(bunny.bunny_name);
+  //   }
+  // }, [bunny.bunny_name, bunnyContext, fetchBunnyContext]);
 
-  const handleHeartClick = async () => {
+  const handleHeartClick = () => {
     if (isLoading) return;
-    
-    setIsLoading(true);
-    try {
-      if (isLiked) {
-        await deleteLike(bunny.bunny_name);
-        updateBunnyContext(bunny.bunny_name, { is_liked: false });
-        updateBunnyLikeCount(bunny.bunny_name, -1);
-      } else {
-        await postLike(bunny.bunny_name);
-        updateBunnyContext(bunny.bunny_name, { is_liked: true });
-        updateBunnyLikeCount(bunny.bunny_name, 1);
-      }
-    } catch (error) {
-      console.error('좋아요 처리 중 오류 발생:', error);
-    } finally {
-      setIsLoading(false);
+    // API 주석처리 — 로컬 상태만 토글
+    if (isLiked) {
+      updateBunnyContext(bunny.bunny_name, { is_liked: false });
+      updateBunnyLikeCount(bunny.bunny_name, -1);
+    } else {
+      updateBunnyContext(bunny.bunny_name, { is_liked: true });
+      updateBunnyLikeCount(bunny.bunny_name, 1);
     }
+    // await postLike / deleteLike 주석처리
   };
 
   return (
