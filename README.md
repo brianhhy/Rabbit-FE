@@ -15,7 +15,7 @@
 | **Frontend** | Next.js 14, TypeScript, Zustand, Tailwind CSS, Framer Motion |
 | **Backend** | Spring Boot, JPA, MySQL |
 | **Infra / DevOps** | Nginx, Docker, Jenkins |
-| **ETC** | WebSocket(STOMP), Figma |
+| **ETC** | WebSocket(STOMP), Figma, Jira, Confluence |
 
 ## 🚀 기능 소개
 
